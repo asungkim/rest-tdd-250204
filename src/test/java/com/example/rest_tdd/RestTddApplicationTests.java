@@ -89,4 +89,37 @@ class RestTddApplicationTests {
                 .andExpect(jsonPath("$.msg").value("이미 사용중인 아이디입니다."));
     }
 
+    @Test
+    @DisplayName("로그인")
+    void login() throws Exception {
+        String requestBody = """
+                {
+                    "username": "user1",
+                    "password": "1234",
+                }
+                """;
+
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/api/v1/members/login")
+                                .contentType("application/json")
+                                .content(requestBody)
+                )
+                .andDo(print());
+
+
+
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(handler().handlerType(ApiV1MemberController.class))
+                .andExpect(handler().methodName("login"))
+                .andExpect(jsonPath("$.code").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("%s님 환영합니다.".formatted("user1"))).andExpect(jsonPath("$.data.id").isNumber())
+                .andExpect(jsonPath("$.data.id").isNumber())
+                .andExpect(jsonPath("$.data.nickname").value("무명"))
+                .andExpect(jsonPath("$.data.createdDate").exists())
+                .andExpect(jsonPath("$.data.modifiedDate").exists());
+
+    }
+
 }
