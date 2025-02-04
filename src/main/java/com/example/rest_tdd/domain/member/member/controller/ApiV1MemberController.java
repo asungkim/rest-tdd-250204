@@ -15,12 +15,11 @@ public class ApiV1MemberController {
 
     private final MemberService memberService;
 
-    record JoinReqBody(String username, String password, String nickName) {
-    }
+    record JoinReqBody(String username, String password, String nickname) {}
 
     @PostMapping("/join")
     public RsData<Void> join(@RequestBody JoinReqBody body) {
-        memberService.join(body.username(), body.password(), body.nickName());
+        memberService.join(body.username(), body.password(), body.nickname());
 
         return new RsData<>("201-1", "회원가입이 완료되었습니다.");
     }
