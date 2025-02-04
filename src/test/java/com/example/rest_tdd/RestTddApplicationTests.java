@@ -25,10 +25,19 @@ class RestTddApplicationTests {
     @Test
     @DisplayName("회원 가입")
     void join() throws Exception {
+        String requestBody = """
+                {
+                    "username": "userNew",
+                    "password": "1234",
+                    "nickname": "무명"
+                }
+                """;
 
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/v1/members/join")
+                                .contentType("application/json")
+                                .content(requestBody)
                 )
                 .andDo(print());
 
