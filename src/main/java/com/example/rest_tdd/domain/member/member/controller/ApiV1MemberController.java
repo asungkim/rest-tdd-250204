@@ -4,6 +4,7 @@ import com.example.rest_tdd.domain.member.member.dto.MemberDto;
 import com.example.rest_tdd.domain.member.member.entity.Member;
 import com.example.rest_tdd.domain.member.member.service.MemberService;
 import com.example.rest_tdd.global.dto.RsData;
+import com.example.rest_tdd.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,12 +18,19 @@ public class ApiV1MemberController {
 
     private final MemberService memberService;
 
-    record JoinReqBody(String username, String password, String nickname) {}
+    record JoinReqBody(String username, String password, String nickname) {
+    }
 
     @PostMapping("/join")
     public RsData<MemberDto> join(@RequestBody JoinReqBody body) {
-        Member member = memberService.join(body.username(), body.password(), body.nickname());
 
+        memberService.findByUsername(body.username())
+                .ifPresent(_ -> {
+                            throw new ServiceException("409-1", "이미 사용중인 아이디입니다.");
+                        }
+                );
+
+        Member member = memberService.join(body.username(), body.password(), body.nickname());
         return new RsData<>(
                 "201-1",
                 "회원가입이 완료되었습니다.",
