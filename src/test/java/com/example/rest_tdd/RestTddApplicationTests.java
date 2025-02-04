@@ -55,7 +55,11 @@ class RestTddApplicationTests {
                 .andExpect(handler().handlerType(ApiV1MemberController.class))
                 .andExpect(handler().methodName("join"))
                 .andExpect(jsonPath("$.code").value("201-1"))
-                .andExpect(jsonPath("$.msg").value("회원가입이 완료되었습니다."));
+                .andExpect(jsonPath("$.msg").value("회원가입이 완료되었습니다."))
+                .andExpect(jsonPath("$.data.id").isNumber())
+                .andExpect(jsonPath("$.data.nickname").value("무명"))
+                .andExpect(jsonPath("$.data.createdDate").exists())
+                .andExpect(jsonPath("$.data.modifiedDate").exists());
     }
 
 }
