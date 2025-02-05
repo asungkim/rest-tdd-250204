@@ -2,7 +2,6 @@ package com.example.rest_tdd.global;
 
 import com.example.rest_tdd.domain.member.member.entity.Member;
 import com.example.rest_tdd.domain.member.member.service.MemberService;
-import com.example.rest_tdd.domain.post.post.service.PostService;
 import com.example.rest_tdd.global.exception.ServiceException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ public class Rq {
         Optional<Member> opWriter = memberService.findByApiKey(apiKey);
 
         if (opWriter.isEmpty()) {
-            throw new ServiceException("401-1", "비밀번호가 일치하지 않습니다.");
+            throw new ServiceException("401-1", "잘못된 인증키입니다.");
         }
 
         return opWriter.get();
