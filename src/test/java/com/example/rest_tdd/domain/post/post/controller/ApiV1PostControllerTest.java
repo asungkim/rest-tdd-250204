@@ -2,6 +2,7 @@ package com.example.rest_tdd.domain.post.post.controller;
 
 import com.example.rest_tdd.domain.post.post.entity.Post;
 import com.example.rest_tdd.domain.post.post.service.PostService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -281,4 +282,33 @@ class ApiV1PostControllerTest {
                 .andExpect(jsonPath("$.msg").value("자신이 작성한 글만 수정 가능합니다."));
     }
 
+    private ResultActions deleteRequest(long postId, String apiKey) throws Exception {
+        return mvc
+                .perform(
+                        delete("/api/v1/posts/%d".formatted(postId))
+                                .header("Authorization", "Bearer " + apiKey)
+
+                )
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 삭제")
+    void delete1() throws Exception {
+
+        long postId = 1;
+        String apiKey = "user1";
+
+        ResultActions resultActions = deleteRequest(postId, apiKey);
+
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(handler().handlerType(ApiV1PostController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(jsonPath("$.code").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("%d번 글 삭제 완료되었습니다.".formatted(postId)));
+
+
+        Assertions.assertThat(postService.getItem(postId)).isEmpty();
+    }
 }

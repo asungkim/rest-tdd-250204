@@ -71,4 +71,22 @@ public class ApiV1PostController {
                 new PostDto(post)
         );
     }
+
+    @DeleteMapping("/{id}")
+    public RsData<Void> delete(@PathVariable long id) {
+        Member writer = rq.getAuthenticatedWriter();
+
+        Post post = postService.getItem(id).orElseThrow(
+                () -> new ServiceException("404-1", "존재하지 않는 글입니다.")
+        );
+
+        if (post.canDelete(writer)) {
+            postService.delete(post);
+        }
+
+        return new RsData<>(
+                "200-1",
+                "%d번 글 삭제 완료되었습니다.".formatted(id)
+        );
+    }
 }
