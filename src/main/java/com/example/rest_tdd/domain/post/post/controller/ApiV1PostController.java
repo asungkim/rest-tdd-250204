@@ -22,9 +22,14 @@ public class ApiV1PostController {
 
     @GetMapping("/{id}")
     public RsData<PostDto> getItem(@PathVariable long id) {
+        Member writer = rq.getAuthenticatedWriter();
+
         Post post = postService.getItem(id).orElseThrow(
                 () -> new ServiceException("404-1", "존재하지 않는 글입니다.")
         );
+
+        // 비공개 글인 경우 403-1 , msg 출력
+        post.canRead(writer);
 
         return new RsData<>(
                 "200-1",
@@ -34,14 +39,15 @@ public class ApiV1PostController {
     }
 
     record WriteReqBody(@NotBlank String title,
-                        @NotBlank String content) {
+                        @NotBlank String content,
+                        boolean published) {
     }
 
     @PostMapping
     public RsData<PostDto> write(@Valid @RequestBody WriteReqBody body) {
         Member writer = rq.getAuthenticatedWriter();
 
-        Post post = postService.write(writer, body.title(), body.content());
+        Post post = postService.write(writer, body.title(), body.content(), body.published());
 
         return new RsData<>(
                 "201-1",

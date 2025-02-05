@@ -91,8 +91,8 @@ class ApiV1PostControllerTest {
     @DisplayName("글 단건 조회 - 다른 유저의 비공개글 조회")
     void item3() throws Exception {
 
-        long postId = 1;
-        String apiKey = "user2";
+        long postId = 3;
+        String apiKey = "user1";
 
         ResultActions resultActions = itemRequest(postId, apiKey);
 
