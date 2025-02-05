@@ -91,13 +91,7 @@ class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.msg").value("이미 사용중인 아이디입니다."));
     }
 
-    @Test
-    @DisplayName("로그인")
-    void login() throws Exception {
-
-        String username = "user1";
-        String password = "user11234";
-
+    private ResultActions loginRequest(String username,String password) throws Exception {
         String requestBody = """
                 {
                     "username": "%s",
@@ -105,13 +99,23 @@ class ApiV1MemberControllerTest {
                 }
                 """.formatted(username, password).stripIndent();
 
-        ResultActions resultActions = mvc
+        return mvc
                 .perform(
                         post("/api/v1/members/login")
                                 .contentType("application/json")
                                 .content(requestBody)
                 )
                 .andDo(print());
+    }
+
+    @Test
+    @DisplayName("로그인")
+    void login() throws Exception {
+
+        String username = "user1";
+        String password = "user11234";
+
+        ResultActions resultActions = loginRequest(username, password);
 
         Member member = memberService.findByUsername(username).get();
 
@@ -138,20 +142,7 @@ class ApiV1MemberControllerTest {
         String username = "user1";
         String password = "1234";
 
-        String requestBody = """
-                {
-                    "username": "%s",
-                    "password": "%s"
-                }
-                """.formatted(username, password).stripIndent();
-
-        ResultActions resultActions = mvc
-                .perform(
-                        post("/api/v1/members/login")
-                                .contentType("application/json")
-                                .content(requestBody)
-                )
-                .andDo(print());
+        ResultActions resultActions = loginRequest(username, password);
 
         resultActions
                 .andExpect(status().isUnauthorized())
@@ -161,4 +152,6 @@ class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.msg").value("비밀번호가 일치하지 않습니다."));
 
     }
+
+
 }
