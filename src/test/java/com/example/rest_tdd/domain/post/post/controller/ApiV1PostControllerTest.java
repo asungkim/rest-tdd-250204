@@ -121,4 +121,23 @@ class ApiV1PostControllerTest {
 
         checkPost(resultActions, post);
     }
+
+    @Test
+    @DisplayName("글 작성 실패 - 로그인 하지 않았을 때")
+    void write2() throws Exception {
+        String title = "new title";
+        String content = "new content";
+        String apiKey = "";
+
+        ResultActions resultActions = writeRequest(apiKey, title, content);
+
+        resultActions
+                .andExpect(status().isUnauthorized())
+                .andExpect(handler().handlerType(ApiV1PostController.class))
+                .andExpect(handler().methodName("write"))
+                .andExpect(jsonPath("$.code").value("401-1"))
+                .andExpect(jsonPath("$.msg").value("잘못된 인증키입니다."));
+
+
+    }
 }
