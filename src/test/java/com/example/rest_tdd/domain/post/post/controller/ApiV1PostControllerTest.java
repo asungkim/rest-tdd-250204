@@ -140,4 +140,26 @@ class ApiV1PostControllerTest {
 
 
     }
+
+    @Test
+    @DisplayName("글 작성 실패 - 제목, 내용이 없을 때")
+    void write3() throws Exception {
+        String title = "";
+        String content = "";
+        String apiKey = "user1";
+
+        ResultActions resultActions = writeRequest(apiKey, title, content);
+
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(handler().handlerType(ApiV1PostController.class))
+                .andExpect(handler().methodName("write"))
+                .andExpect(jsonPath("$.code").value("400-1"))
+                .andExpect(jsonPath("$.msg").value("""
+                        content : NotBlank : must not be blank
+                        title : NotBlank : must not be blank
+                        """.trim().stripIndent()));
+
+
+    }
 }
