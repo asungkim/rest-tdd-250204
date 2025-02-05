@@ -6,8 +6,6 @@ import com.example.rest_tdd.global.entity.BaseTime;
 import com.example.rest_tdd.global.exception.ServiceException;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +61,7 @@ public class Post extends BaseTime {
             return true;
         }
 
-        throw new ServiceException("403-1", "자신이 작성한 댓글만 수정 가능합니다.");
+        throw new ServiceException("403-1", "자신이 작성한 글만 수정 가능합니다.");
     }
 
     public boolean canDelete(Member writer) {
