@@ -38,27 +38,30 @@ class ApiV1MemberDtoControllerTest {
                 .andExpect(jsonPath("$.data.modifiedDate").value(matchesPattern(member.getModifiedDate().toString().replaceAll("0+$", "") + ".*")));
     }
 
-    @Test
-    @DisplayName("회원 가입")
-    void join() throws Exception {
+    private ResultActions joinReqeust(String username, String password, String nickname) throws Exception {
         String requestBody = """
                 {
-                    "username": "userNew",
-                    "password": "1234",
-                    "nickname": "무명"
+                    "username": "%s",
+                    "password": "%s",
+                    "nickname": "%s"
                 }
-                """;
+                """.formatted(username, password, nickname);
 
-        ResultActions resultActions = mvc
+        return mvc
                 .perform(
                         post("/api/v1/members/join")
                                 .contentType("application/json")
                                 .content(requestBody)
                 )
                 .andDo(print());
+    }
 
+    @Test
+    @DisplayName("회원 가입 성공")
+    void join() throws Exception {
+        ResultActions resultActions = joinReqeust("userNew", "1234", "무명");
 
-        com.example.rest_tdd.domain.member.member.entity.Member member = memberService.findByUsername("userNew").get();
+        Member member = memberService.findByUsername("userNew").get();
         assertThat(member.getNickname()).isEqualTo("무명");
 
         resultActions
@@ -72,23 +75,10 @@ class ApiV1MemberDtoControllerTest {
     }
 
     @Test
-    @DisplayName("회원 가입2 - 이미 username이 존재할 때")
-    void duplicate() throws Exception {
-        String requestBody = """
-                {
-                    "username": "user1",
-                    "password": "1234",
-                    "nickname": "무명"
-                }
-                """;
+    @DisplayName("회원 가입 실패 - 이미 username이 존재할 때")
+    void join2() throws Exception {
+        ResultActions resultActions = joinReqeust("user1", "1234", "무명");
 
-        ResultActions resultActions = mvc
-                .perform(
-                        post("/api/v1/members/join")
-                                .contentType("application/json")
-                                .content(requestBody)
-                )
-                .andDo(print());
 
         resultActions
                 .andExpect(status().isConflict())
@@ -96,6 +86,24 @@ class ApiV1MemberDtoControllerTest {
                 .andExpect(handler().methodName("join"))
                 .andExpect(jsonPath("$.code").value("409-1"))
                 .andExpect(jsonPath("$.msg").value("이미 사용중인 아이디입니다."));
+    }
+
+    @Test
+    @DisplayName("회원 가입 실패 - 입력 데이터 누락")
+    void join3() throws Exception {
+        ResultActions resultActions = joinReqeust("", "", "");
+
+
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(handler().handlerType(ApiV1MemberController.class))
+                .andExpect(handler().methodName("join"))
+                .andExpect(jsonPath("$.code").value("400-1"))
+                .andExpect(jsonPath("$.msg").value("""
+                        nickname : NotBlank : must not be blank
+                        password : NotBlank : must not be blank
+                        username : NotBlank : must not be blank
+                        """.trim().stripIndent()));
     }
 
     private ResultActions loginRequest(String username, String password) throws Exception {
