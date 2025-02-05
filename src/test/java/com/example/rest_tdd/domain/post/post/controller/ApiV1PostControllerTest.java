@@ -220,4 +220,23 @@ class ApiV1PostControllerTest {
                 .andExpect(jsonPath("$.code").value("401-1"))
                 .andExpect(jsonPath("$.msg").value("잘못된 인증키입니다."));
     }
+
+    @Test
+    @DisplayName("글 수정 실패 - no post ")
+    void modify3() throws Exception {
+
+        long postId = 1000;
+        String title = "modified title";
+        String content = "modified content";
+        String apiKey = "user1";
+
+        ResultActions resultActions = modifyReqeust(postId, apiKey, title, content);
+
+        resultActions
+                .andExpect(status().isNotFound())
+                .andExpect(handler().handlerType(ApiV1PostController.class))
+                .andExpect(handler().methodName("modify"))
+                .andExpect(jsonPath("$.code").value("404-1" ))
+                .andExpect(jsonPath("$.msg").value("존재하지 않는 글입니다."));
+    }
 }
