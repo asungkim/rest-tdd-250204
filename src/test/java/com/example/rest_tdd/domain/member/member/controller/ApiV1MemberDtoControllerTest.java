@@ -2,7 +2,6 @@ package com.example.rest_tdd.domain.member.member.controller;
 
 import com.example.rest_tdd.domain.member.member.entity.Member;
 import com.example.rest_tdd.domain.member.member.service.MemberService;
-import com.example.rest_tdd.global.Rq;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +27,6 @@ class ApiV1MemberDtoControllerTest {
     private MockMvc mvc;
     @Autowired
     private MemberService memberService;
-
-    @Autowired
-    private Rq rq;
 
     private void checkMember(ResultActions resultActions, Member member) throws Exception {
         resultActions
@@ -71,7 +67,7 @@ class ApiV1MemberDtoControllerTest {
                 .andExpect(jsonPath("$.code").value("201-1"))
                 .andExpect(jsonPath("$.msg").value("회원가입이 완료되었습니다."));
 
-        checkMember(resultActions,member);
+        checkMember(resultActions, member);
     }
 
     @Test
@@ -163,6 +159,15 @@ class ApiV1MemberDtoControllerTest {
 
     }
 
+    private ResultActions meRequest(String apiKey) throws Exception {
+        return mvc
+                .perform(
+                        get("/api/v1/members/me")
+                                .header("Authorization", "Bearer " + apiKey)
+                )
+                .andDo(print());
+    }
+
     @Test
     @DisplayName("내 정보 조회")
     void me() throws Exception {
@@ -186,5 +191,19 @@ class ApiV1MemberDtoControllerTest {
         checkMember(resultActions, member);
     }
 
+    @Test
+    @DisplayName("내 정보 조회 - 실패 - 잘못된 apiKey")
+    void me2() throws Exception {
 
+        String apiKey = "noExist";
+
+        ResultActions resultActions = meRequest(apiKey);
+
+        resultActions
+                .andExpect(status().isUnauthorized())
+                .andExpect(handler().handlerType(ApiV1MemberController.class))
+                .andExpect(handler().methodName("me"))
+                .andExpect(jsonPath("$.code").value("401-1"))
+                .andExpect(jsonPath("$.msg").value("잘못된 인증키입니다."));
+    }
 }
