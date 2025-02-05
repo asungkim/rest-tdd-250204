@@ -1,6 +1,5 @@
 package com.example.rest_tdd.domain.member.member.dto;
 
-import com.example.rest_tdd.domain.member.member.entity.Member;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -13,7 +12,7 @@ public class MemberDto {
     private LocalDateTime modifiedDate;
     private String nickname;
 
-    public MemberDto(Member member) {
+    public MemberDto(com.example.rest_tdd.domain.member.member.entity.Member member) {
         this.id = member.getId();
         this.createdDate = member.getCreatedDate();
         this.modifiedDate = member.getModifiedDate();

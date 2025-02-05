@@ -2,6 +2,7 @@ package com.example.rest_tdd.domain.member.member.controller;
 
 import com.example.rest_tdd.domain.member.member.entity.Member;
 import com.example.rest_tdd.domain.member.member.service.MemberService;
+import com.example.rest_tdd.global.Rq;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,21 +14,32 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Transactional
-class ApiV1MemberControllerTest {
+class ApiV1MemberDtoControllerTest {
     @Autowired
     private MockMvc mvc;
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private Rq rq;
+
+    private void checkMember(ResultActions resultActions, Member member) throws Exception {
+        resultActions
+                .andExpect(jsonPath("$.data").exists())
+                .andExpect(jsonPath("$.data.item.id").value(member.getId()))
+                .andExpect(jsonPath("$.data.item.nickname").value(member.getNickname()))
+                .andExpect(jsonPath("$.data.item.createdDate").value(member.getCreatedDate().toString()))
+                .andExpect(jsonPath("$.data.item.modifiedDate").value(member.getModifiedDate().toString()));
+    }
 
     @Test
     @DisplayName("회원 가입")
@@ -49,7 +61,7 @@ class ApiV1MemberControllerTest {
                 .andDo(print());
 
 
-        Member member = memberService.findByUsername("userNew").get();
+        com.example.rest_tdd.domain.member.member.entity.Member member = memberService.findByUsername("userNew").get();
         assertThat(member.getNickname()).isEqualTo("무명");
 
         resultActions
@@ -57,11 +69,7 @@ class ApiV1MemberControllerTest {
                 .andExpect(handler().handlerType(ApiV1MemberController.class))
                 .andExpect(handler().methodName("join"))
                 .andExpect(jsonPath("$.code").value("201-1"))
-                .andExpect(jsonPath("$.msg").value("회원가입이 완료되었습니다."))
-                .andExpect(jsonPath("$.data.id").isNumber())
-                .andExpect(jsonPath("$.data.nickname").value("무명"))
-                .andExpect(jsonPath("$.data.createdDate").exists())
-                .andExpect(jsonPath("$.data.modifiedDate").exists());
+                .andExpect(jsonPath("$.msg").value("회원가입이 완료되었습니다."));
     }
 
     @Test
@@ -91,7 +99,7 @@ class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.msg").value("이미 사용중인 아이디입니다."));
     }
 
-    private ResultActions loginRequest(String username,String password) throws Exception {
+    private ResultActions loginRequest(String username, String password) throws Exception {
         String requestBody = """
                 {
                     "username": "%s",
@@ -117,7 +125,7 @@ class ApiV1MemberControllerTest {
 
         ResultActions resultActions = loginRequest(username, password);
 
-        Member member = memberService.findByUsername(username).get();
+        com.example.rest_tdd.domain.member.member.entity.Member member = memberService.findByUsername(username).get();
 
 
         resultActions
@@ -151,6 +159,30 @@ class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.code").value("401-1"))
                 .andExpect(jsonPath("$.msg").value("비밀번호가 일치하지 않습니다."));
 
+    }
+
+    @Test
+    @DisplayName("내 정보 조회")
+    void me() throws Exception {
+
+        String apiKey = "user1";
+
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/members/me")
+                                .header("Authorization", "Bearer " + apiKey)
+                );
+
+
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(handler().handlerType(ApiV1MemberController.class))
+                .andExpect(handler().methodName("me"))
+                .andExpect(jsonPath("$.code").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("내 정보 조회가 완료되었습니다."));
+
+        Member member = memberService.findByApiKey(apiKey).get();
+        checkMember(resultActions, member);
     }
 
 

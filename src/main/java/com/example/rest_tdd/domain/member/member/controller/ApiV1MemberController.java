@@ -1,16 +1,12 @@
 package com.example.rest_tdd.domain.member.member.controller;
 
 import com.example.rest_tdd.domain.member.member.dto.MemberDto;
-import com.example.rest_tdd.domain.member.member.entity.Member;
 import com.example.rest_tdd.domain.member.member.service.MemberService;
 import com.example.rest_tdd.global.Rq;
 import com.example.rest_tdd.global.dto.RsData;
 import com.example.rest_tdd.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -32,7 +28,7 @@ public class ApiV1MemberController {
                         }
                 );
 
-        Member member = memberService.join(body.username(), body.password(), body.nickname());
+        com.example.rest_tdd.domain.member.member.entity.Member member = memberService.join(body.username(), body.password(), body.nickname());
         return new RsData<>(
                 "201-1",
                 "회원가입이 완료되었습니다.",
@@ -48,7 +44,7 @@ public class ApiV1MemberController {
     @PostMapping("/login")
     public RsData<LoginResBody> login(@RequestBody LoginReqBody body) {
 
-        Member member = memberService.findByUsername(body.username()).get();
+        com.example.rest_tdd.domain.member.member.entity.Member member = memberService.findByUsername(body.username()).get();
 
         if (!member.getPassword().equals(body.password())) {
             throw new ServiceException("401-1", "비밀번호가 일치하지 않습니다.");
@@ -60,5 +56,6 @@ public class ApiV1MemberController {
                 new LoginResBody(new MemberDto(member), member.getApiKey())
         );
     }
+
 
 }
