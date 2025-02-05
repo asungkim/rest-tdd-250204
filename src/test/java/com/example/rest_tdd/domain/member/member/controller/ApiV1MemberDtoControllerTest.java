@@ -35,10 +35,10 @@ class ApiV1MemberDtoControllerTest {
     private void checkMember(ResultActions resultActions, Member member) throws Exception {
         resultActions
                 .andExpect(jsonPath("$.data").exists())
-                .andExpect(jsonPath("$.data.item.id").value(member.getId()))
-                .andExpect(jsonPath("$.data.item.nickname").value(member.getNickname()))
-                .andExpect(jsonPath("$.data.item.createdDate").value(member.getCreatedDate().toString()))
-                .andExpect(jsonPath("$.data.item.modifiedDate").value(member.getModifiedDate().toString()));
+                .andExpect(jsonPath("$.data.id").value(member.getId()))
+                .andExpect(jsonPath("$.data.nickname").value(member.getNickname()))
+                .andExpect(jsonPath("$.data.createdDate").value(member.getCreatedDate().toString()))
+                .andExpect(jsonPath("$.data.modifiedDate").value(member.getModifiedDate().toString()));
     }
 
     @Test
@@ -70,6 +70,8 @@ class ApiV1MemberDtoControllerTest {
                 .andExpect(handler().methodName("join"))
                 .andExpect(jsonPath("$.code").value("201-1"))
                 .andExpect(jsonPath("$.msg").value("회원가입이 완료되었습니다."));
+
+        checkMember(resultActions,member);
     }
 
     @Test
