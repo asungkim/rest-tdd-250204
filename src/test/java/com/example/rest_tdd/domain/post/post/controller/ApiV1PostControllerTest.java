@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -81,4 +82,41 @@ class ApiV1PostControllerTest {
 
     }
 
+    private ResultActions writeRequest(String title, String content) throws Exception {
+        String requestBody = """
+                {
+                    "title": "%s",
+                    "content": "%s",
+                }
+                """.formatted(title, content).trim().stripIndent();
+
+        return mvc
+                .perform(
+                        post("/api/v1/posts/")
+                                .contentType("application/json")
+                                .content(requestBody)
+                )
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 작성")
+    void write1() throws Exception {
+        String title = "new title";
+        String content = "new content";
+
+        ResultActions resultActions = writeRequest(title, content);
+
+        Post post = postService.getLatestItem().get();
+
+        resultActions
+                .andExpect(status().isCreated())
+                .andExpect(handler().handlerType(ApiPostController.class))
+                .andExpect(handler().methodName("write"))
+                .andExpect(jsonPath("$.code").value("201-1"))
+                .andExpect(jsonPath("$.msg").value("%d번 글 작성 완료되었습니다."
+                        .formatted(post.getId())));
+
+        checkPost(resultActions, post);
+    }
 }

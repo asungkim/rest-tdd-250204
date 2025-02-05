@@ -2,7 +2,6 @@ package com.example.rest_tdd.domain.post.post.service;
 
 import com.example.rest_tdd.domain.member.member.entity.Member;
 import com.example.rest_tdd.domain.member.member.repository.MemberRepository;
-import com.example.rest_tdd.domain.post.comment.dto.CommentDto;
 import com.example.rest_tdd.domain.post.post.entity.Post;
 import com.example.rest_tdd.domain.post.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -60,5 +59,9 @@ public class PostService {
 
     public void flush() {
         postRepository.flush();
+    }
+
+    public Optional<Post> getLatestItem() {
+        return postRepository.findTopByOrderByIdDesc();
     }
 }
