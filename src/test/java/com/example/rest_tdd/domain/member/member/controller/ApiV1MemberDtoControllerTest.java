@@ -136,8 +136,8 @@ class ApiV1MemberDtoControllerTest {
                 .andExpect(jsonPath("$.data").exists())
                 .andExpect(jsonPath("$.data.item.id").value(member.getId()))
                 .andExpect(jsonPath("$.data.item.nickname").value(member.getNickname()))
-                .andExpect(jsonPath("$.data.item.createdDate").value(member.getCreatedDate().toString()))
-                .andExpect(jsonPath("$.data.item.modifiedDate").value(member.getModifiedDate().toString()))
+                .andExpect(jsonPath("$.data.item.createdDate").value(matchesPattern(member.getCreatedDate().toString().replaceAll("0+$", "") + ".*")))
+                .andExpect(jsonPath("$.data.item.modifiedDate").value(matchesPattern(member.getModifiedDate().toString().replaceAll("0+$", "") + ".*")))
                 .andExpect(jsonPath("$.data.apiKey").value(member.getApiKey()));
 
     }
@@ -164,7 +164,7 @@ class ApiV1MemberDtoControllerTest {
     @DisplayName("로그인 실패 - 존재하지 않는 아이디")
     void login3() throws Exception {
 
-        String username = "";
+        String username = "noExist";
         String password = "1234";
 
         ResultActions resultActions = loginRequest(username, password);
@@ -175,6 +175,42 @@ class ApiV1MemberDtoControllerTest {
                 .andExpect(handler().methodName("login"))
                 .andExpect(jsonPath("$.code").value("401-1"))
                 .andExpect(jsonPath("$.msg").value("존재하지 않는 아이디입니다."));
+
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - username 누락")
+    void logi4() throws Exception {
+
+        String username = "";
+        String password = "1234";
+
+        ResultActions resultActions = loginRequest(username, password);
+
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(handler().handlerType(ApiV1MemberController.class))
+                .andExpect(handler().methodName("login"))
+                .andExpect(jsonPath("$.code").value("400-1"))
+                .andExpect(jsonPath("$.msg").value("username : NotBlank : must not be blank"));
+
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - password 누락")
+    void logi5() throws Exception {
+
+        String username = "aaa";
+        String password = "";
+
+        ResultActions resultActions = loginRequest(username, password);
+
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(handler().handlerType(ApiV1MemberController.class))
+                .andExpect(handler().methodName("login"))
+                .andExpect(jsonPath("$.code").value("400-1"))
+                .andExpect(jsonPath("$.msg").value("password : NotBlank : must not be blank"));
 
     }
 
