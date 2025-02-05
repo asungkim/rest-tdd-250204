@@ -236,7 +236,29 @@ class ApiV1PostControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(handler().handlerType(ApiV1PostController.class))
                 .andExpect(handler().methodName("modify"))
-                .andExpect(jsonPath("$.code").value("404-1" ))
+                .andExpect(jsonPath("$.code").value("404-1"))
                 .andExpect(jsonPath("$.msg").value("존재하지 않는 글입니다."));
+    }
+
+    @Test
+    @DisplayName("글 수정 실패 - no input data ")
+    void modify4() throws Exception {
+
+        long postId = 1;
+        String title = "";
+        String content = "";
+        String apiKey = "user1";
+
+        ResultActions resultActions = modifyReqeust(postId, apiKey, title, content);
+
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(handler().handlerType(ApiV1PostController.class))
+                .andExpect(handler().methodName("modify"))
+                .andExpect(jsonPath("$.code").value("400-1"))
+                .andExpect(jsonPath("$.msg").value("""
+                        content : NotBlank : must not be blank
+                        title : NotBlank : must not be blank
+                        """.trim().stripIndent()));
     }
 }
