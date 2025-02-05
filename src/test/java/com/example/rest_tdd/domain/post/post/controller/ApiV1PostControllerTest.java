@@ -13,8 +13,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.matchesPattern;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -162,4 +161,45 @@ class ApiV1PostControllerTest {
 
 
     }
+
+    private ResultActions modifyReqeust(long postId, String apiKey, String title, String content) throws Exception {
+        String requestBody = """
+                {
+                    "title": "%s",
+                    "content": "%s"
+                }
+                """.formatted(title, content).stripIndent();
+        return mvc
+                .perform(
+                        put("/api/v1/posts/%d".formatted(postId))
+                                .header("Authorization", "Bearer " + apiKey)
+                                .contentType("application/json")
+                                .content(requestBody)
+
+                )
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 수정")
+    void modify1() throws Exception {
+
+        long postId = 1;
+        String title = "modified title";
+        String content = "modified content";
+        String apiKey = "user1";
+
+        ResultActions resultActions = modifyReqeust(postId, apiKey, title, content);
+
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(handler().handlerType(ApiV1PostController.class))
+                .andExpect(handler().methodName("modify"))
+                .andExpect(jsonPath("$.code").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("%d번 글 수정이 완료되었습니다.".formatted(postId)));
+
+        Post post = postService.getItem(postId).get();
+        checkPost(resultActions, post);
+    }
+
 }
