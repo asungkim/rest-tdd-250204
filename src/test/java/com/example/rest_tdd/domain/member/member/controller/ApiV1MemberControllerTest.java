@@ -1,6 +1,5 @@
-package com.example.rest_tdd;
+package com.example.rest_tdd.domain.member.member.controller;
 
-import com.example.rest_tdd.domain.member.member.controller.ApiV1MemberController;
 import com.example.rest_tdd.domain.member.member.entity.Member;
 import com.example.rest_tdd.domain.member.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
@@ -11,17 +10,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-class RestTddApplicationTests {
-
+@Transactional
+class ApiV1MemberControllerTest {
     @Autowired
     private MockMvc mvc;
     @Autowired
@@ -95,7 +97,7 @@ class RestTddApplicationTests {
         String requestBody = """
                 {
                     "username": "user1",
-                    "password": "1234",
+                    "password": "1234"
                 }
                 """;
 
@@ -103,10 +105,9 @@ class RestTddApplicationTests {
                 .perform(
                         post("/api/v1/members/login")
                                 .contentType("application/json")
-                                .content(requestBody)
+                                .content(requestBody.stripIndent())
                 )
                 .andDo(print());
-
 
 
         resultActions
@@ -114,12 +115,11 @@ class RestTddApplicationTests {
                 .andExpect(handler().handlerType(ApiV1MemberController.class))
                 .andExpect(handler().methodName("login"))
                 .andExpect(jsonPath("$.code").value("200-1"))
-                .andExpect(jsonPath("$.msg").value("%s님 환영합니다.".formatted("user1"))).andExpect(jsonPath("$.data.id").isNumber())
+                .andExpect(jsonPath("$.msg").value("%s님 환영합니다.".formatted("유저1")))
                 .andExpect(jsonPath("$.data.id").isNumber())
-                .andExpect(jsonPath("$.data.nickname").value("무명"))
+                .andExpect(jsonPath("$.data.nickname").value("유저1"))
                 .andExpect(jsonPath("$.data.createdDate").exists())
                 .andExpect(jsonPath("$.data.modifiedDate").exists());
 
     }
-
 }

@@ -37,5 +37,20 @@ public class ApiV1MemberController {
                 new MemberDto(member));
     }
 
+    record LoginReqBody(String username, String password) {
+    }
+
+
+    @PostMapping("/login")
+    public RsData<MemberDto> login(@RequestBody LoginReqBody body) {
+
+        Member member = memberService.findByUsername(body.username()).get();
+
+        return new RsData<>(
+                "200-1",
+                "%s님 환영합니다.".formatted(member.getNickname()),
+                new MemberDto(member)
+        );
+    }
 
 }
