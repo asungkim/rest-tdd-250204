@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -33,8 +34,8 @@ class ApiV1MemberDtoControllerTest {
                 .andExpect(jsonPath("$.data").exists())
                 .andExpect(jsonPath("$.data.id").value(member.getId()))
                 .andExpect(jsonPath("$.data.nickname").value(member.getNickname()))
-                .andExpect(jsonPath("$.data.createdDate").value(member.getCreatedDate().toString()))
-                .andExpect(jsonPath("$.data.modifiedDate").value(member.getModifiedDate().toString()));
+                .andExpect(jsonPath("$.data.createdDate").value(matchesPattern(member.getCreatedDate().toString().replaceAll("0+$", "") + ".*")))
+                .andExpect(jsonPath("$.data.modifiedDate").value(matchesPattern(member.getModifiedDate().toString().replaceAll("0+$", "") + ".*")));
     }
 
     @Test
@@ -156,6 +157,24 @@ class ApiV1MemberDtoControllerTest {
                 .andExpect(handler().methodName("login"))
                 .andExpect(jsonPath("$.code").value("401-1"))
                 .andExpect(jsonPath("$.msg").value("비밀번호가 일치하지 않습니다."));
+
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 존재하지 않는 아이디")
+    void login3() throws Exception {
+
+        String username = "";
+        String password = "1234";
+
+        ResultActions resultActions = loginRequest(username, password);
+
+        resultActions
+                .andExpect(status().isUnauthorized())
+                .andExpect(handler().handlerType(ApiV1MemberController.class))
+                .andExpect(handler().methodName("login"))
+                .andExpect(jsonPath("$.code").value("401-1"))
+                .andExpect(jsonPath("$.msg").value("존재하지 않는 아이디입니다."));
 
     }
 

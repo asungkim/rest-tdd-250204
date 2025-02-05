@@ -45,7 +45,9 @@ public class ApiV1MemberController {
     @PostMapping("/login")
     public RsData<LoginResBody> login(@RequestBody LoginReqBody body) {
 
-        com.example.rest_tdd.domain.member.member.entity.Member member = memberService.findByUsername(body.username()).get();
+        Member member = memberService.findByUsername(body.username()).orElseThrow(
+                () -> new ServiceException("401-1", "존재하지 않는 아이디입니다.")
+        );
 
         if (!member.getPassword().equals(body.password())) {
             throw new ServiceException("401-1", "비밀번호가 일치하지 않습니다.");
