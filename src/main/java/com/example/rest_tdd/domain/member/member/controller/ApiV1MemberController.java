@@ -1,12 +1,16 @@
 package com.example.rest_tdd.domain.member.member.controller;
 
 import com.example.rest_tdd.domain.member.member.dto.MemberDto;
+import com.example.rest_tdd.domain.member.member.entity.Member;
 import com.example.rest_tdd.domain.member.member.service.MemberService;
 import com.example.rest_tdd.global.Rq;
 import com.example.rest_tdd.global.dto.RsData;
 import com.example.rest_tdd.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -28,7 +32,7 @@ public class ApiV1MemberController {
                         }
                 );
 
-        com.example.rest_tdd.domain.member.member.entity.Member member = memberService.join(body.username(), body.password(), body.nickname());
+        Member member = memberService.join(body.username(), body.password(), body.nickname());
         return new RsData<>(
                 "201-1",
                 "회원가입이 완료되었습니다.",

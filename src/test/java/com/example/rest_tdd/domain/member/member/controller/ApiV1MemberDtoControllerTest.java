@@ -180,7 +180,6 @@ class ApiV1MemberDtoControllerTest {
                 .andExpect(handler().methodName("me"))
                 .andExpect(jsonPath("$.code").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("내 정보 조회가 완료되었습니다."));
-
         Member member = memberService.findByApiKey(apiKey).get();
         checkMember(resultActions, member);
     }
