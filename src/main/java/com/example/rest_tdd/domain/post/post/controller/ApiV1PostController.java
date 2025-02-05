@@ -55,12 +55,16 @@ public class ApiV1PostController {
 
     @PutMapping("/{id}")
     public RsData<PostDto> modify(@Valid @RequestBody ModifyReqBody body, @PathVariable long id) {
+        Member writer = rq.getAuthenticatedWriter();
+
         Post post = postService.getItem(id).orElseThrow(
                 () -> new ServiceException("404-1", "존재하지 않는 글입니다.")
         );
 
-        postService.modify(post, body.title(), body.content());
+        if (post.canModify(writer)) {
+            postService.modify(post, body.title(), body.content());
 
+        }
         return new RsData<>(
                 "200-1",
                 "%d번 글 수정이 완료되었습니다.".formatted(post.getId()),

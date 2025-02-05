@@ -202,4 +202,22 @@ class ApiV1PostControllerTest {
         checkPost(resultActions, post);
     }
 
+    @Test
+    @DisplayName("글 수정 실패 - no apiKey ")
+    void modify2() throws Exception {
+
+        long postId = 1;
+        String title = "modified title";
+        String content = "modified content";
+        String apiKey = "123123123";
+
+        ResultActions resultActions = modifyReqeust(postId, apiKey, title, content);
+
+        resultActions
+                .andExpect(status().isUnauthorized())
+                .andExpect(handler().handlerType(ApiV1PostController.class))
+                .andExpect(handler().methodName("modify"))
+                .andExpect(jsonPath("$.code").value("401-1"))
+                .andExpect(jsonPath("$.msg").value("잘못된 인증키입니다."));
+    }
 }
