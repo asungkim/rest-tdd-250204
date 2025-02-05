@@ -3,6 +3,7 @@ package com.example.rest_tdd.domain.member.member.controller;
 import com.example.rest_tdd.domain.member.member.dto.MemberDto;
 import com.example.rest_tdd.domain.member.member.entity.Member;
 import com.example.rest_tdd.domain.member.member.service.MemberService;
+import com.example.rest_tdd.global.Rq;
 import com.example.rest_tdd.global.dto.RsData;
 import com.example.rest_tdd.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiV1MemberController {
 
     private final MemberService memberService;
+    private final Rq rq;
 
     record JoinReqBody(String username, String password, String nickname) {
     }
@@ -47,6 +49,10 @@ public class ApiV1MemberController {
     public RsData<LoginResBody> login(@RequestBody LoginReqBody body) {
 
         Member member = memberService.findByUsername(body.username()).get();
+
+        if (!member.getPassword().equals(body.password())) {
+            throw new ServiceException("401-1", "비밀번호가 일치하지 않습니다.");
+        }
 
         return new RsData<>(
                 "200-1",

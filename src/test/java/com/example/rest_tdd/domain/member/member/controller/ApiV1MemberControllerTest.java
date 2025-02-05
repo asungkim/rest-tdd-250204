@@ -123,11 +123,42 @@ class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.code").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("%s님 환영합니다.".formatted(member.getNickname())))
                 .andExpect(jsonPath("$.data").exists())
-                .andExpect(jsonPath("$.data.item.id").isNumber())
+                .andExpect(jsonPath("$.data.item.id").value(member.getId()))
                 .andExpect(jsonPath("$.data.item.nickname").value(member.getNickname()))
-                .andExpect(jsonPath("$.data.item.createdDate").exists())
-                .andExpect(jsonPath("$.data.item.modifiedDate").exists())
-                .andExpect(jsonPath("$.data.apiKey").exists());
+                .andExpect(jsonPath("$.data.item.createdDate").value(member.getCreatedDate().toString()))
+                .andExpect(jsonPath("$.data.item.modifiedDate").value(member.getModifiedDate().toString()))
+                .andExpect(jsonPath("$.data.apiKey").value(member.getApiKey()));
+
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 비밀번호 틀림")
+    void login2() throws Exception {
+
+        String username = "user1";
+        String password = "1234";
+
+        String requestBody = """
+                {
+                    "username": "%s",
+                    "password": "%s"
+                }
+                """.formatted(username, password).stripIndent();
+
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/api/v1/members/login")
+                                .contentType("application/json")
+                                .content(requestBody)
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isUnauthorized())
+                .andExpect(handler().handlerType(ApiV1MemberController.class))
+                .andExpect(handler().methodName("login"))
+                .andExpect(jsonPath("$.code").value("401-1"))
+                .andExpect(jsonPath("$.msg").value("비밀번호가 일치하지 않습니다."));
 
     }
 }
