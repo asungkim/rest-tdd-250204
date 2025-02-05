@@ -58,7 +58,7 @@ class ApiV1PostControllerTest {
 
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(handler().handlerType(ApiPostController.class))
+                .andExpect(handler().handlerType(ApiV1PostController.class))
                 .andExpect(handler().methodName("getItem"))
                 .andExpect(jsonPath("$.code").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("%d번 글을 조회하였습니다.".formatted(postId)));
@@ -75,24 +75,25 @@ class ApiV1PostControllerTest {
 
         resultActions
                 .andExpect(status().isNotFound())
-                .andExpect(handler().handlerType(ApiPostController.class))
+                .andExpect(handler().handlerType(ApiV1PostController.class))
                 .andExpect(handler().methodName("getItem"))
                 .andExpect(jsonPath("$.code").value("404-1"))
                 .andExpect(jsonPath("$.msg").value("존재하지 않는 글입니다."));
 
     }
 
-    private ResultActions writeRequest(String title, String content) throws Exception {
+    private ResultActions writeRequest(String apiKey, String title, String content) throws Exception {
         String requestBody = """
                 {
                     "title": "%s",
-                    "content": "%s",
+                    "content": "%s"
                 }
-                """.formatted(title, content).trim().stripIndent();
+                """.formatted(title, content).stripIndent();
 
         return mvc
                 .perform(
-                        post("/api/v1/posts/")
+                        post("/api/v1/posts")
+                                .header("Authorization", "Bearer " + apiKey)
                                 .contentType("application/json")
                                 .content(requestBody)
                 )
@@ -104,14 +105,15 @@ class ApiV1PostControllerTest {
     void write1() throws Exception {
         String title = "new title";
         String content = "new content";
+        String apiKey = "user1";
 
-        ResultActions resultActions = writeRequest(title, content);
+        ResultActions resultActions = writeRequest(apiKey, title, content);
 
         Post post = postService.getLatestItem().get();
 
         resultActions
                 .andExpect(status().isCreated())
-                .andExpect(handler().handlerType(ApiPostController.class))
+                .andExpect(handler().handlerType(ApiV1PostController.class))
                 .andExpect(handler().methodName("write"))
                 .andExpect(jsonPath("$.code").value("201-1"))
                 .andExpect(jsonPath("$.msg").value("%d번 글 작성 완료되었습니다."
