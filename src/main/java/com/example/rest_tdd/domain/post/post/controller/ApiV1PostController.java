@@ -37,6 +37,23 @@ public class ApiV1PostController {
 
     }
 
+    @GetMapping("/me")
+    public RsData<PageDto> getMines(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "3") int pageSize,
+            @RequestParam(defaultValue = "title") String keywordType,
+            @RequestParam(defaultValue = "") String keyword) {
+
+        Member writer = rq.getAuthenticatedWriter();
+        Page<Post> pagePost = postService.getMines(writer, page, pageSize, keywordType, keyword);
+
+        return new RsData<>(
+                "200-1",
+                "내 글 목록 조회가 완료되었습니다.",
+                new PageDto(pagePost)
+        );
+    }
+
     @GetMapping("/{id}")
     public RsData<PostWithContentDto> getItem(@PathVariable long id) {
         Post post = postService.getItem(id).orElseThrow(
@@ -114,4 +131,6 @@ public class ApiV1PostController {
                 "%d번 글 삭제 완료되었습니다.".formatted(id)
         );
     }
+
+
 }

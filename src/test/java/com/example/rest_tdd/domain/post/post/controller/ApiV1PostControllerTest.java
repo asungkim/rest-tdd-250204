@@ -1,5 +1,7 @@
 package com.example.rest_tdd.domain.post.post.controller;
 
+import com.example.rest_tdd.domain.member.member.entity.Member;
+import com.example.rest_tdd.domain.member.member.service.MemberService;
 import com.example.rest_tdd.domain.post.post.entity.Post;
 import com.example.rest_tdd.domain.post.post.service.PostService;
 import org.assertj.core.api.Assertions;
@@ -32,6 +34,8 @@ class ApiV1PostControllerTest {
 
     @Autowired
     private PostService postService;
+    @Autowired
+    private MemberService memberService;
 
     private void checkPost(ResultActions resultActions, Post post) throws Exception {
         resultActions
@@ -194,15 +198,16 @@ class ApiV1PostControllerTest {
                 .andExpect(handler().handlerType(ApiV1PostController.class))
                 .andExpect(handler().methodName("getMines"))
                 .andExpect(jsonPath("$.code").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("내 글 목록 조회가 완료되었습니다."))
                 .andExpect(jsonPath("$.data.items.length()").value(pageSize)) // itemsPerPage
                 .andExpect(jsonPath("$.data.currentPageNo").value(page)) // curPage
                 .andExpect(jsonPath("$.data.totalPages").value(2)) // totalPages
                 .andExpect(jsonPath("$.data.totalItems").value(4));
 
-
-//        Page<Post> postPage = postService.getListedItems(page, pageSize, keywordType, keyword);
-//        List<Post> posts = postPage.getContent();
-//        checkPosts(resultActions, posts);
+        Member author = memberService.findByApiKey(apiKey).get();
+        Page<Post> postPage = postService.getMines(author, page, pageSize, keywordType, keyword);
+        List<Post> posts = postPage.getContent();
+        checkPosts(resultActions, posts);
     }
 
     @Test

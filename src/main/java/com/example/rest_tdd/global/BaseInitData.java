@@ -69,7 +69,7 @@ public class BaseInitData {
         postService.write(user1, "title5", "content5", true, true);
         postService.write(user2, "title6", "content6", true, true);
         postService.write(user1, "title7", "content7", true, true);
-        postService.write(user2, "title8", "content8", true, true);
+        postService.write(user1, "title8", "content8", true, true);
         postService.write(user2, "title9", "content9", true, true);
 
     }
