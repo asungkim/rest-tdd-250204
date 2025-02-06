@@ -5,6 +5,7 @@ import com.example.rest_tdd.domain.member.member.repository.MemberRepository;
 import com.example.rest_tdd.domain.post.post.entity.Post;
 import com.example.rest_tdd.domain.post.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +19,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
-    public Post write(Member author, String title, String content,boolean published,boolean listed) {
+    public Post write(Member author, String title, String content, boolean published, boolean listed) {
 
         return postRepository.save(
                 Post
@@ -56,7 +57,7 @@ public class PostService {
 
 
     public void writeComment(Post post, String content) {
-        post.addComment(post.getAuthor(),content);
+        post.addComment(post.getAuthor(), content);
     }
 
     public void flush() {
@@ -68,6 +69,8 @@ public class PostService {
     }
 
     public List<Post> getListedItems() {
-        return postRepository.findByListed(true);
+        PageRequest pageRequest = PageRequest.of(0, 3);
+
+        return postRepository.findByListed(true, pageRequest);
     }
 }

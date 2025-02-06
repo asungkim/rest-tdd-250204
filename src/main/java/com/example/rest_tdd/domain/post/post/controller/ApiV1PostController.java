@@ -22,16 +22,23 @@ public class ApiV1PostController {
     private final PostService postService;
     private final Rq rq;
 
+    record GetItemsResBody(List<PostDto> items, int currentPageNo, int totalPages) {
+    }
+
     @GetMapping
-    public RsData<List<PostDto>> getItems() {
+    public RsData<GetItemsResBody> getItems() {
         List<Post> posts = postService.getListedItems();
+        List<PostDto> postDtos = posts.stream()
+                .map(PostDto::new)
+                .toList();
+
+        int currentPageNo = 1;
+        int totalPages = 3;
 
         return new RsData<>(
                 "200-1",
                 "긂 목록 조회가 완료되었습니다.",
-                posts.stream()
-                        .map(PostDto::new)
-                        .toList()
+                new GetItemsResBody(postDtos, currentPageNo, totalPages)
         );
     }
 

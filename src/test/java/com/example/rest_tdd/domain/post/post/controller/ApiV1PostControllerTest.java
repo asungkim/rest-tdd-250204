@@ -78,16 +78,16 @@ class ApiV1PostControllerTest {
         for (int i = 0; i < posts.size(); i++) {
             Post post = posts.get(i);
             resultActions
-                    .andExpect(jsonPath("$.data[%d]".formatted(i)).exists())
-                    .andExpect(jsonPath("$.data[%d].id".formatted(i)).value(post.getId()))
-                    .andExpect(jsonPath("$.data[%d].title".formatted(i)).value(post.getTitle()))
-                    .andExpect(jsonPath("$.data[%d].content".formatted(i)).doesNotExist())
-                    .andExpect(jsonPath("$.data[%d].authorId".formatted(i)).value(post.getAuthor().getId()))
-                    .andExpect(jsonPath("$.data[%d].authorName".formatted(i)).value(post.getAuthor().getNickname()))
-                    .andExpect(jsonPath("$.data[%d].published".formatted(i)).value(post.isPublished()))
-                    .andExpect(jsonPath("$.data[%d].listed".formatted(i)).value(post.isListed()))
-                    .andExpect(jsonPath("$.data[%d].createdDate".formatted(i)).value(matchesPattern(post.getCreatedDate().toString().replaceAll("0+$", "") + ".*")))
-                    .andExpect(jsonPath("$.data[%d].modifiedDate".formatted(i)).value(matchesPattern(post.getModifiedDate().toString().replaceAll("0+$", "") + ".*")));
+                    .andExpect(jsonPath("$.data.items[%d]".formatted(i)).exists())
+                    .andExpect(jsonPath("$.data.items[%d].id".formatted(i)).value(post.getId()))
+                    .andExpect(jsonPath("$.data.items[%d].title".formatted(i)).value(post.getTitle()))
+                    .andExpect(jsonPath("$.data.items[%d].content".formatted(i)).doesNotExist())
+                    .andExpect(jsonPath("$.data.items[%d].authorId".formatted(i)).value(post.getAuthor().getId()))
+                    .andExpect(jsonPath("$.data.items[%d].authorName".formatted(i)).value(post.getAuthor().getNickname()))
+                    .andExpect(jsonPath("$.data.items[%d].published".formatted(i)).value(post.isPublished()))
+                    .andExpect(jsonPath("$.data.items[%d].listed".formatted(i)).value(post.isListed()))
+                    .andExpect(jsonPath("$.data.items[%d].createdDate".formatted(i)).value(matchesPattern(post.getCreatedDate().toString().replaceAll("0+$", "") + ".*")))
+                    .andExpect(jsonPath("$.data.items[%d].modifiedDate".formatted(i)).value(matchesPattern(post.getModifiedDate().toString().replaceAll("0+$", "") + ".*")));
         }
     }
 
