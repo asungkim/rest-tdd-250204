@@ -69,8 +69,8 @@ public class PostService {
         return postRepository.findTopByOrderByIdDesc();
     }
 
-    public Page<Post> getListedItems(int page,int pageSize) {
-        PageRequest pageRequest = PageRequest.of(page, pageSize);
+    public Page<Post> getListedItems(int page, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize);
 
         return postRepository.findByListed(true, pageRequest);
     }

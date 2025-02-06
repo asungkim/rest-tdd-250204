@@ -22,8 +22,6 @@ public class ApiV1PostController {
     private final PostService postService;
     private final Rq rq;
 
-
-
     @GetMapping
     public RsData<PageDto> getItems(@RequestParam(defaultValue = "1") int page,
                                             @RequestParam(defaultValue = "3") int pageSize) {
