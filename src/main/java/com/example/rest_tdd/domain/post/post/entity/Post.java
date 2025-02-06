@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -84,5 +85,15 @@ public class Post extends BaseTime {
         }
 
         throw new ServiceException("403-1", "비공개 설정된 글입니다.");
+    }
+
+    public Comment getLatestComment() {
+        return comments
+                .stream()
+                .sorted(Comparator.comparing(Comment::getId).reversed())
+                .findFirst()
+                .orElseThrow(
+                        () -> new ServiceException("404-2", "존재하지 않는 댓글입니다.")
+                );
     }
 }
