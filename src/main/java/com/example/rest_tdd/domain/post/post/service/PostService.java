@@ -69,9 +69,11 @@ public class PostService {
         return postRepository.findTopByOrderByIdDesc();
     }
 
-    public Page<Post> getListedItems(int page, int pageSize) {
+    public Page<Post> getListedItems(int page, int pageSize, String keywordType, String keyword) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize);
 
-        return postRepository.findByListed(true, pageRequest);
+        String likeKeyword = "%" + keyword + "%";
+
+        return postRepository.findByListedAndTitleLike(true, likeKeyword, pageRequest);
     }
 }

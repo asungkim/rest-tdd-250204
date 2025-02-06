@@ -24,14 +24,17 @@ public class ApiV1PostController {
 
     @GetMapping
     public RsData<PageDto> getItems(@RequestParam(defaultValue = "1") int page,
-                                            @RequestParam(defaultValue = "3") int pageSize) {
-        Page<Post> postPage = postService.getListedItems(page, pageSize);
+                                    @RequestParam(defaultValue = "3") int pageSize,
+                                    @RequestParam(defaultValue = "title") String keywordType,
+                                    @RequestParam(defaultValue = "") String keyword) {
+        Page<Post> postPage = postService.getListedItems(page, pageSize, keywordType, keyword);
 
         return new RsData<>(
                 "200-1",
                 "글 목록 조회가 완료되었습니다.",
                 new PageDto(postPage)
         );
+
     }
 
     @GetMapping("/{id}")
