@@ -12,9 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -93,6 +91,28 @@ class ApiV1CommentControllerTest {
                 .andExpect(handler().methodName("modify"))
                 .andExpect(jsonPath("$.code").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("%d번 댓글이 수정되었습니다.".formatted(commentId)));
+    }
+
+    @Test
+    @DisplayName("댓글 삭제")
+    void delete1() throws Exception {
+        long postId = 1;
+        long commentId = 1;
+        String apiKey = "user1";
+
+
+        ResultActions resultActions = mvc.perform(
+                        delete("/api/v1/posts/%d/comments/%d".formatted(postId, commentId))
+                                .header("Authorization", "Bearer " + apiKey)
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(handler().handlerType(ApiV1CommentController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(jsonPath("$.code").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("%d번 댓글이 삭제되었습니다.".formatted(commentId)));
     }
 
 }
