@@ -29,7 +29,7 @@ public class ApiV1PostController {
 
         return new RsData<>(
                 "200-1",
-                "긂 목록 조회가 완료되었습니다.",
+                "글 목록 조회가 완료되었습니다.",
                 new PageDto(postPage)
         );
     }
