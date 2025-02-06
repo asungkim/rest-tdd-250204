@@ -22,7 +22,7 @@ public class PageDto {
                 .toList();
         this.totalPages = postPage.getTotalPages();
         this.totalItems = (int) postPage.getTotalElements();
-        this.currentPageNo = postPage.getNumber();
+        this.currentPageNo = postPage.getNumber() + 1;
         this.pageSize = postPage.getSize();
 
     }

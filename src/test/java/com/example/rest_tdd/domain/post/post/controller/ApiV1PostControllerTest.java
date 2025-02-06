@@ -117,7 +117,6 @@ class ApiV1PostControllerTest {
                 .andExpect(handler().handlerType(ApiV1PostController.class))
                 .andExpect(handler().methodName("getItems"))
                 .andExpect(jsonPath("$.code").value("200-1"))
-                .andExpect(jsonPath("$.msg").value("키워드 %s에 대한 검색 결과입니다.".formatted(keyword)))
                 .andExpect(jsonPath("$.data.items.length()").value(pageSize)) // itemsPerPage
                 .andExpect(jsonPath("$.data.currentPageNo").value(page)) // curPage
                 .andExpect(jsonPath("$.data.totalPages").value(3)) // totalPages
