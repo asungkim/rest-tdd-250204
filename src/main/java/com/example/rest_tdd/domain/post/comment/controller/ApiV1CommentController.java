@@ -23,7 +23,7 @@ public class ApiV1CommentController {
     private final PostService postService;
     private final Rq rq;
 
-    @GetMapping()
+    @GetMapping
     public List<CommentDto> getItems(@PathVariable long postId) {
         Post post = postService.getItem(postId).orElseThrow(
                 () -> new ServiceException("404-1", "존재하지 않는 게시글입니다.")
