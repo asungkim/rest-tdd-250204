@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -61,6 +62,37 @@ class ApiV1CommentControllerTest {
                 .andExpect(handler().methodName("write"))
                 .andExpect(jsonPath("$.code").value("201-1"))
                 .andExpect(jsonPath("$.msg").value("%d 번 댓글 작성이 완료되었습니다.".formatted(comment.getId())));
+    }
+
+    @Test
+    @DisplayName("댓글 수정")
+    void modify() throws Exception {
+        long postId = 1;
+        long commentId = 1;
+        String apiKey = "user1";
+        String content = "수정된 댓글 내용";
+
+
+        String requestBody = """
+                {
+                    "content": "%s"
+                }
+                """.formatted(content).stripIndent();
+
+        ResultActions resultActions = mvc.perform(
+                        put("/api/v1/posts/%d/comments/%d".formatted(postId,commentId))
+                                .header("Authorization", "Bearer " + apiKey)
+                                .contentType("application/json")
+                                .content(requestBody)
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(handler().handlerType(ApiV1CommentController.class))
+                .andExpect(handler().methodName("modify"))
+                .andExpect(jsonPath("$.code").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("%d번 댓글이 수정되었습니다.".formatted(commentId)));
     }
 
 }

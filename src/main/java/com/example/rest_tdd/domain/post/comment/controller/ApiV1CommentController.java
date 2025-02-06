@@ -1,7 +1,6 @@
 package com.example.rest_tdd.domain.post.comment.controller;
 
 import com.example.rest_tdd.domain.member.member.entity.Member;
-import com.example.rest_tdd.domain.member.member.service.MemberService;
 import com.example.rest_tdd.domain.post.comment.dto.CommentDto;
 import com.example.rest_tdd.domain.post.comment.entity.Comment;
 import com.example.rest_tdd.domain.post.post.entity.Post;
@@ -88,7 +87,7 @@ public class ApiV1CommentController {
         }
 
 
-        return new RsData<>("201-1",
+        return new RsData<>("200-1",
                 "%d번 댓글이 수정되었습니다.".formatted(id));
 
     }
