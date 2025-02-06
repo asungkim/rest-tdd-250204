@@ -69,7 +69,10 @@ class ApiV1PostControllerTest {
                 .andExpect(handler().handlerType(ApiV1PostController.class))
                 .andExpect(handler().methodName("getItems"))
                 .andExpect(jsonPath("$.code").value("200-1"))
-                .andExpect(jsonPath("$.msg").value("긂 목록 조회가 완료되었습니다."));
+                .andExpect(jsonPath("$.msg").value("긂 목록 조회가 완료되었습니다."))
+                .andExpect(jsonPath("$.data.length()").value(3)) // itemsPerPage
+                .andExpect(jsonPath("$.data.currentPageNo").isNumber()) // curPage
+                .andExpect(jsonPath("$.data.totalPages").isNumber()); // totalPages
 
         List<Post> posts = postService.getListedItems();
         for (int i = 0; i < posts.size(); i++) {
