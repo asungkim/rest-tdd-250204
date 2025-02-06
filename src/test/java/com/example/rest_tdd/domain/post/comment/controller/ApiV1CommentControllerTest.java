@@ -115,4 +115,23 @@ class ApiV1CommentControllerTest {
                 .andExpect(jsonPath("$.msg").value("%d번 댓글이 삭제되었습니다.".formatted(commentId)));
     }
 
+    @Test
+    @DisplayName("댓글 다건 조회")
+    void items() throws Exception {
+        long postId = 1;
+
+        ResultActions resultActions = mvc.perform(
+                        get("/api/v1/posts/%d/comments".formatted(postId))
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(handler().handlerType(ApiV1CommentController.class))
+                .andExpect(handler().methodName("getItems"))
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$.[0].id").value(1))
+                .andExpect(jsonPath("$.[1].id").value(2));
+    }
+
 }
