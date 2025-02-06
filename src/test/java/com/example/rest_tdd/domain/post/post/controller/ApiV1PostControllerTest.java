@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -70,11 +71,12 @@ class ApiV1PostControllerTest {
                 .andExpect(handler().methodName("getItems"))
                 .andExpect(jsonPath("$.code").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("긂 목록 조회가 완료되었습니다."))
-                .andExpect(jsonPath("$.data.length()").value(3)) // itemsPerPage
+                .andExpect(jsonPath("$.data.items.length()").value(3)) // itemsPerPage
                 .andExpect(jsonPath("$.data.currentPageNo").isNumber()) // curPage
                 .andExpect(jsonPath("$.data.totalPages").isNumber()); // totalPages
 
-        List<Post> posts = postService.getListedItems();
+        Page<Post> postPage = postService.getListedItems(1,3);
+        List<Post> posts = postPage.getContent();
         for (int i = 0; i < posts.size(); i++) {
             Post post = posts.get(i);
             resultActions

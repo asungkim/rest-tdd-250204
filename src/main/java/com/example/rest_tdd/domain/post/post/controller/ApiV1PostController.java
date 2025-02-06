@@ -1,6 +1,7 @@
 package com.example.rest_tdd.domain.post.post.controller;
 
 import com.example.rest_tdd.domain.member.member.entity.Member;
+import com.example.rest_tdd.domain.post.post.dto.PageDto;
 import com.example.rest_tdd.domain.post.post.dto.PostDto;
 import com.example.rest_tdd.domain.post.post.entity.Post;
 import com.example.rest_tdd.domain.post.post.service.PostService;
@@ -10,9 +11,8 @@ import com.example.rest_tdd.global.exception.ServiceException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -22,23 +22,17 @@ public class ApiV1PostController {
     private final PostService postService;
     private final Rq rq;
 
-    record GetItemsResBody(List<PostDto> items, int currentPageNo, int totalPages) {
-    }
+
 
     @GetMapping
-    public RsData<GetItemsResBody> getItems() {
-        List<Post> posts = postService.getListedItems();
-        List<PostDto> postDtos = posts.stream()
-                .map(PostDto::new)
-                .toList();
-
-        int currentPageNo = 1;
-        int totalPages = 3;
+    public RsData<PageDto> getItems(@RequestParam(defaultValue = "1") int page,
+                                            @RequestParam(defaultValue = "3") int pageSize) {
+        Page<Post> postPage = postService.getListedItems(page, pageSize);
 
         return new RsData<>(
                 "200-1",
                 "긂 목록 조회가 완료되었습니다.",
-                new GetItemsResBody(postDtos, currentPageNo, totalPages)
+                new PageDto(postPage)
         );
     }
 
