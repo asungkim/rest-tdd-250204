@@ -66,4 +66,8 @@ public class PostService {
     public Optional<Post> getLatestItem() {
         return postRepository.findTopByOrderByIdDesc();
     }
+
+    public List<Post> getListedItems() {
+        return postRepository.findByListed(true);
+    }
 }

@@ -60,7 +60,7 @@ class ApiV1PostControllerTest {
     void items1() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
-                        get("/api/v1/posts/")
+                        get("/api/v1/posts")
                 )
                 .andDo(print());
 
@@ -69,9 +69,9 @@ class ApiV1PostControllerTest {
                 .andExpect(handler().handlerType(ApiV1PostController.class))
                 .andExpect(handler().methodName("getItems"))
                 .andExpect(jsonPath("$.code").value("200-1"))
-                .andExpect(jsonPath("$.msg").value("글 목록을 조회하였습니다."));
+                .andExpect(jsonPath("$.msg").value("긂 목록 조회가 완료되었습니다."));
 
-        List<Post> posts = postService.getItems();
+        List<Post> posts = postService.getListedItems();
         for (int i = 0; i < posts.size(); i++) {
             Post post = posts.get(i);
             resultActions

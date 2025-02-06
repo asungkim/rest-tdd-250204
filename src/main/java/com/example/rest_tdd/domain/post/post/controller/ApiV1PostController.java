@@ -12,6 +12,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
@@ -19,6 +21,19 @@ public class ApiV1PostController {
 
     private final PostService postService;
     private final Rq rq;
+
+    @GetMapping
+    public RsData<List<PostDto>> getItems() {
+        List<Post> posts = postService.getListedItems();
+
+        return new RsData<>(
+                "200-1",
+                "긂 목록 조회가 완료되었습니다.",
+                posts.stream()
+                        .map(PostDto::new)
+                        .toList()
+        );
+    }
 
     @GetMapping("/{id}")
     public RsData<PostDto> getItem(@PathVariable long id) {
