@@ -26,7 +26,7 @@ public class ApiV1PostController {
                 () -> new ServiceException("404-1", "존재하지 않는 글입니다.")
         );
 
-        // 비공개 글인 경우
+        // 비공개 글인 경우에만 인증을 하고 읽어본다. 공개글인 경우 로그인 하지 않은 사람도 확인 가능
         if (!post.isPublished()) {
             Member writer = rq.getAuthenticatedWriter();
             post.canRead(writer);
@@ -41,14 +41,15 @@ public class ApiV1PostController {
 
     record WriteReqBody(@NotBlank String title,
                         @NotBlank String content,
-                        boolean published) {
+                        boolean published,
+                        boolean listed) {
     }
 
     @PostMapping
     public RsData<PostDto> write(@Valid @RequestBody WriteReqBody body) {
         Member writer = rq.getAuthenticatedWriter();
 
-        Post post = postService.write(writer, body.title(), body.content(), body.published());
+        Post post = postService.write(writer, body.title(), body.content(), body.published(), body.listed());
 
         return new RsData<>(
                 "201-1",

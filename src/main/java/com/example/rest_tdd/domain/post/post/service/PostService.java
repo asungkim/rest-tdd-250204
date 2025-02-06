@@ -18,12 +18,13 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
-    public Post write(Member author, String title, String content,boolean published) {
+    public Post write(Member author, String title, String content,boolean published,boolean listed) {
 
         return postRepository.save(
                 Post
                         .builder()
                         .published(published)
+                        .listed(listed)
                         .author(author)
                         .title(title)
                         .content(content)

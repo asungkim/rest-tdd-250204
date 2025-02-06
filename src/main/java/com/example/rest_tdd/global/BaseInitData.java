@@ -34,7 +34,7 @@ public class BaseInitData {
     @Transactional
     public void memberInit() {
 
-        if(memberService.count() > 0) {
+        if (memberService.count() > 0) {
             return;
         }
 
@@ -50,24 +50,23 @@ public class BaseInitData {
     @Transactional
     public void postInit() {
 
-        if(postService.count() > 0) {
+        if (postService.count() > 0) {
             return;
         }
 
         Member user1 = memberService.findByUsername("user1").get();
         Member user2 = memberService.findByUsername("user2").get();
 
-        Post p1 = postService.write(user1, "축구 하실분 모집합니다.", "저녁 6시까지 모여주세요.",true);
-        p1.addComment(user1,"저 참석하겠습니다.");
-        p1.addComment(user1,"공격수 자리 있나요?");
+        Post p1 = postService.write(user1, "축구 하실분 모집합니다.", "저녁 6시까지 모여주세요.", true, true);
+        p1.addComment(user1, "저 참석하겠습니다.");
+        p1.addComment(user1, "공격수 자리 있나요?");
 
-        Post p2 = postService.write(user1, "농구 하실분 모집합니다.", "3명 모집",true);
-        p2.addComment(user1,"저 갈게요.");
+        Post p2 = postService.write(user1, "농구 하실분 모집합니다.", "3명 모집", true, false);
+        p2.addComment(user1, "저 갈게요.");
 
-        postService.write(user2, "title3.", "content3.",false);
+        postService.write(user2, "title3.", "content3.", false, true);
 
     }
-
 
 
 }
