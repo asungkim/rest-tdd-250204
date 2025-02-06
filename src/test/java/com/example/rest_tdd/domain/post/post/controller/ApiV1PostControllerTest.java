@@ -169,6 +169,43 @@ class ApiV1PostControllerTest {
     }
 
     @Test
+    @DisplayName("내가 작성한 글 조회 - 검색 페이징이 되어야 함.")
+    void mines() throws Exception {
+
+        int page = 1;
+        int pageSize = 3;
+
+        //검색어, 검색 대상
+        String keywordType = "content";
+        String keyword = "content";
+        String apiKey = "user1";
+
+
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/posts/me?page=%d&pageSize=%d&keywordType=%s&keyword=%s"
+                                .formatted(page, pageSize, keywordType, keyword))
+                                .header("Authorization", "Bearer " + apiKey)
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(handler().handlerType(ApiV1PostController.class))
+                .andExpect(handler().methodName("getMines"))
+                .andExpect(jsonPath("$.code").value("200-1"))
+                .andExpect(jsonPath("$.data.items.length()").value(pageSize)) // itemsPerPage
+                .andExpect(jsonPath("$.data.currentPageNo").value(page)) // curPage
+                .andExpect(jsonPath("$.data.totalPages").value(2)) // totalPages
+                .andExpect(jsonPath("$.data.totalItems").value(4));
+
+
+//        Page<Post> postPage = postService.getListedItems(page, pageSize, keywordType, keyword);
+//        List<Post> posts = postPage.getContent();
+//        checkPosts(resultActions, posts);
+    }
+
+    @Test
     @DisplayName("글 단건 조회 - 다른 유저의 공개글 조회")
     void item1() throws Exception {
         long postId = 1;
@@ -221,6 +258,7 @@ class ApiV1PostControllerTest {
                 .andExpect(jsonPath("$.msg").value("비공개 설정된 글입니다."));
 
     }
+
 
     private ResultActions writeRequest(String apiKey, String title, String content) throws Exception {
         String requestBody = """
