@@ -74,6 +74,10 @@ public class PostService {
 
         String likeKeyword = "%" + keyword + "%";
 
+        if (keywordType.equals("content")) {
+            return postRepository.findByListedAndContentLike(true,likeKeyword,pageRequest);
+        }
+
         return postRepository.findByListedAndTitleLike(true, likeKeyword, pageRequest);
     }
 }

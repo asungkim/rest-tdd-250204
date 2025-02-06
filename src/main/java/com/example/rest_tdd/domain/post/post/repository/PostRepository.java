@@ -13,4 +13,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByListed(boolean listed, PageRequest pageRequest);
 
     Page<Post> findByListedAndTitleLike(boolean listed, String keyword,PageRequest pageRequest);
+
+    Page<Post> findByListedAndContentLike(boolean listed, String keyword, PageRequest pageRequest);
 }
